@@ -32,7 +32,7 @@ public class Province {
     // Campo que almacena el identificador único de la provincia. Es autogenerado y clave primaria.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
 
     // Campo que almacena el código de la provincia, normalmente una cadena corta que identifica la provincia.
@@ -48,10 +48,6 @@ public class Province {
     @Size(max = 100, message = "{msg.province.name.size}")
     @Column(name = "name", nullable = false, length = 100) // Define la columna correspondiente en la tabla.
     private String name;
-
-    // Relación uno a muchos con la entidad `Location`. Una provincia puede tener muchas ubicaciones.
-    @OneToMany(mappedBy = "province", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Location> locations;
 
 
     // Relación con la entidad `Region`, representando la comunidad autónoma a la que pertenece la provincia.

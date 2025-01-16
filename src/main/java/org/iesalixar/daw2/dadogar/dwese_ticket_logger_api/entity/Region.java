@@ -31,21 +31,10 @@ public class Region {
     // Es una clave primaria autogenerada por la base de datos.
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+    private Long id;
 
-
-    // Campo que almacena el código de la región, normalmente una cadena corta que identifica la región.
-    // Ejemplo: "01" para Andalucía.
-    @NotEmpty(message = "{msg.region.code.notEmpty}")
-    @Size(max = 2, message = "{msg.region.code.size}")
-    @Column(name = "code", nullable = false, length = 2) // Define la columna correspondiente en la tabla.
     private String code;
 
-
-    // Campo que almacena el nombre completo de la región, como "Andalucía" o "Cataluña".
-    @NotEmpty(message = "{msg.region.name.notEmpty}")
-    @Size(max = 100, message = "{msg.region.name.size}")
-    @Column(name = "name", nullable = false, length = 100) // Define la columna correspondiente en la tabla.
     private String name;
 
     // Relación uno a muchos con la entidad Province.
