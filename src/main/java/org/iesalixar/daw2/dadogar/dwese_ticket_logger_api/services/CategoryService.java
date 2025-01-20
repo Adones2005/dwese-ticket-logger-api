@@ -9,11 +9,13 @@ import org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.repositories.CategoryR
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+@Service
 public class CategoryService {
 
     private static final Logger logger = LoggerFactory.getLogger(CategoryController.class);
@@ -95,7 +97,7 @@ public class CategoryService {
                 .orElseThrow(() -> new IllegalArgumentException("La categoría no existe."));
 
         // Verificar si el nombre de la categoría ya está en uso por otra categoría
-        if (categoryRepository.existsCategoryByNameAndNotId(updateDTO.getName(), id)) {
+        if (categoryRepository.existsByNameAndIdNot(updateDTO.getName(), id)) {
             throw new IllegalArgumentException("El nombre de la categoría ya está en uso.");
         }
 

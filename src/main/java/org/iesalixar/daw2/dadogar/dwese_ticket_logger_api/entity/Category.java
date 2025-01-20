@@ -44,7 +44,7 @@ public class Category {
     private Category parentCategory;
 
     // Relación uno a muchos con categorías hijas. Una categoría puede tener múltiples subcategorías.
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Mapeo inverso de la relación.
+    @OneToMany(mappedBy = "parentCategory", cascade = CascadeType.ALL, fetch = FetchType.LAZY) // Mapeo inverso de la relación.
     private List<Category> categories; // Lista de categorías hijas.
 
     /**
