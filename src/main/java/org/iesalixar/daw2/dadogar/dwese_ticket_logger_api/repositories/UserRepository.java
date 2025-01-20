@@ -1,7 +1,7 @@
 package org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.repositories;
 
 
-import org.iesalixar.daw2.dadogar.dwese_ticket_logger_webapp.entity.User;
+import org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
