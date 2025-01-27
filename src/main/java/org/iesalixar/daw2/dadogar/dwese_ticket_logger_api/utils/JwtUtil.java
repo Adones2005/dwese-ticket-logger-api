@@ -3,11 +3,11 @@ package org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.utils;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.KeyPair;
 import io.jsonwebtoken.security.Keys;
 
 
-
-
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cglib.core.internal.Function;
 import org.springframework.stereotype.Component;
@@ -20,6 +20,11 @@ import java.util.List;
 
 @Component
 public class JwtUtil {
+
+    @Autowired
+    private KeyPair jwtKeyPair;
+
+    private static final long JWT_EXPIRATION = 3600000;
 
 
     @Value("${jwt.secret}")
@@ -42,34 +47,38 @@ public class JwtUtil {
     }
 
 
-    public Claims extractAllClaims(String token){
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
+    public Claims extractAllClaims(String token) {
+        return Jwts.parser() // JwtParserBuilder
+                .verifyWith(jwtKeyPair.getPublic()) // Configura la clave para verificar la firma
+                .build() // JwtParser
+                .parseSignedClaims(token) // Verifica el token y lo parsea
+                .getPayload(); // Devuelve el cuerpo del JWT (claims)
     }
 
 
-    public String generateToken(String username, List<String> roles){
+    public String generateToken(String username, List<String> roles) {
         return Jwts.builder()
-                .subject(username)
-                .claim("roles",roles)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
-                .signWith(getSigningKey())
-                .compact();
+                .subject(username) // Configura el claim "sub" (nombre de usuario)
+                .claim("roles", roles) // Incluye los roles como claim adicional
+                .issuedAt(new Date()) // Fecha de emisión del token
+                .expiration(new Date(System.currentTimeMillis() + JWT_EXPIRATION)) // Expira en 1 hora
+                .signWith(jwtKeyPair.getPrivate(), Jwts.SIG.RS256) // Firma el token con la clave secreta
+                .compact(); // Genera el token en formato JWT
     }
 
 
     public boolean validateToken(String token, String username) {
-        final String extractedUsername = extractUsername(token);
-        return extractedUsername.equals(username) && !isTokenExpired(token);
+        Claims claims = Jwts.parser() // JwtParserBuilder
+                .verifyWith(jwtKeyPair.getPublic()) // Configura la clave para verificar la firma
+                .build() // JwtParser
+                .parseSignedClaims(token) // Jws<Claims>
+                .getPayload(); // JwsClaims
+        return username.equals(claims.getSubject()) && !isTokenExpired(claims);
     }
 
 
-    private boolean isTokenExpired(String token) {
-        return extractClaim(token, Claims::getExpiration).before(new Date());
+    private boolean isTokenExpired(Claims claims) {
+        return claims.getExpiration().before(new Date());
     }
 
 
