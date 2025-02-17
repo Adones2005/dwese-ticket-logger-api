@@ -6,6 +6,7 @@ import org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.entity.Region;
 import org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.mappers.RegionMapper;
 import org.iesalixar.daw2.dadogar.dwese_ticket_logger_api.repositories.RegionRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -19,6 +20,12 @@ public class RegionService {
 
     @Autowired
     private RegionMapper regionMapper;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Value("${spring.mail.envio}")
+    private String emailEnvio;
 
     public RegionService(RegionRepository regionRepository) {
         this.regionRepository = regionRepository;
@@ -41,10 +48,22 @@ public class RegionService {
         if (regionRepository.existsByCode(regionCreateDTO.getCode())) {
             throw new IllegalArgumentException("El código de la región ya existe: " + regionCreateDTO.getCode());
         }
+
         Region region = regionMapper.toEntity(regionCreateDTO);
         Region savedRegion = regionRepository.save(region);
+
+        // Crear el correo
+        String subject = "Nueva región creada: " + savedRegion.getName();
+        String text = "Se ha creado una nueva región:\n\n"
+                + "Código: " + savedRegion.getCode() + "\n"
+                + "Nombre: " + savedRegion.getName();
+
+        // Enviar el correo (ajustar destinatario según necesidad)
+        emailService.sendEmail(emailEnvio, subject, text);
+
         return regionMapper.toDTO(savedRegion);
     }
+
 
     public RegionDTO updateRegion(Long id, RegionCreateDTO regionCreateDTO) {
         Region existingRegion = regionRepository.findById(id)
