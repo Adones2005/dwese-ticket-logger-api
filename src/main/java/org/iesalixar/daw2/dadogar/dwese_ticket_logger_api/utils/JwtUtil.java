@@ -42,21 +42,23 @@ public class JwtUtil {
     }
 
 
-    public Claims extractAllClaims(String token){
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
+    public Claims extractAllClaims(String token) {
+        return Jwts.parserBuilder()
+                .setSigningKey(getSigningKey())
                 .build()
-                .parseSignedClaims(token)
-                .getPayload();
+                .parseClaimsJws(token)
+                .getBody();
     }
+
+
 
 
     public String generateToken(String username, List<String> roles){
         return Jwts.builder()
-                .subject(username)
+                .setSubject(username)
                 .claim("roles",roles)
-                .issuedAt(new Date())
-                .expiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .signWith(getSigningKey())
                 .compact();
     }
